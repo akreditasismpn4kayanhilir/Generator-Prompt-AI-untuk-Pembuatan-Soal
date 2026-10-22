@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Prompt AI untuk Pembuatan Soal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            color: #334155;
+            padding: 20px 10px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 24px;
+        }
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        .header p {
+            font-size: 13px;
+            color: #e0e7ff;
+            line-height: 1.4;
+        }
+        .content {
+            padding: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1e293b;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #334155;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        .checkbox-label input {
+            width: 16px;
+            height: 16px;
+            accent-color: #4f46e5;
+            cursor: pointer;
+        }
+        .btn-generate {
+            width: 100%;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-generate:hover {
+            background-color: #4338ca;
+        }
+        .output-section {
+            margin-top: 24px;
+        }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .btn-copy {
+            background-color: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-copy:hover {
+            background-color: #cbd5e1;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #334155;
+            resize: vertical;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎯 Generator Prompt AI untuk Soal</h1>
+            <p>Atur parameter di bawah ini lalu klik tombol Generate untuk membuat prompt.</p>
+        </div>
+
+        <!-- Form Input -->
+        <div class="content">
+            
+            <!-- Mata Pelajaran & Jenjang -->
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Mata Pelajaran</label>
+                    <input type="text" id="mapel" value="Fisika" placeholder="Contoh: Matematika">
+                </div>
+                <div class="form-group">
+                    <label>Jenjang / Kelas</label>
+                    <input type="text" id="jenjang" value="Kelas 11 SMA" placeholder="Contoh: Kelas 10">
+                </div>
+            </div>
+
+            <!-- Topik -->
+            <div class="form-group">
+                <label>Topik / Materi Spesifik</label>
+                <input type="text" id="topik" value="Hukum Termodinamika" placeholder="Contoh: Hukum Newton">
+            </div>
+
+            <!-- Tipe Soal & Jumlah -->
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Tipe Soal</label>
+                    <select id="tipeSoal">
+                        <option value="Pilihan Ganda (Opsi A-E)">Pilihan Ganda (Opsi A-E)</option>
+                        <option value="Esai / Uraian">Esai / Uraian</option>
+                        <option value="Benar / Salah">Benar / Salah</option>
+                        <option value="Menjodohkan">Menjodohkan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Soal</label>
+                    <input type="number" id="jumlahSoal" value="5" min="1" max="25">
+                </div>
+            </div>
+
+            <!-- Level Kognitif -->
+            <div class="form-group">
+                <label>Level Kognitif / Tingkat Kesulitan</label>
+                <select id="levelKognitif">
+                    <option value="Campuran (LOTS & HOTS - Proporsional)">Campuran (LOTS & HOTS - Proporsional)</option>
+                    <option value="HOTS (High Order Thinking Skills / Menganalisis & Mengevaluasi)">HOTS (Menganalisis, Mengevaluasi, Mencipta - C4 s.d. C6)</option>
+                    <option value="LOTS (Low Order Thinking Skills / Mengingat & Memahami - C1 s.d. C2)">LOTS (Mengingat & Memahami - C1 s.d. C2)</option>
+                    <option value="Aplikasi & Kontekstual (Berbasis Studi Kasus/Kehidupan Nyata)">Aplikasi & Kontekstual (Berbasis Studi Kasus)</option>
+                </select>
+            </div>
+
+            <!-- Kurikulum & Fitur Tambahan -->
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Kurikulum / Acuan</label>
+                    <input type="text" id="kurikulum" value="Kurikulum Merdeka">
+                </div>
+                <div class="form-group">
+                    <label>Fitur Tambahan dalam Soal</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="kunciJawaban" checked> Kunci Jawaban
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="pembahasan" checked> Pembahasan
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tombol Generate yang Diminta -->
+            <button class="btn-generate" onclick="generatePrompt()">✨ Generate Prompt AI</button>
+
+            <!-- Hasil Prompt -->
+            <div class="output-section">
+                <div class="output-header">
+                    <label>Hasil Prompt untuk Gemini:</label>
+                    <button class="btn-copy" id="btnCopy" onclick="copyToClipboard()">📋 Salin Prompt</button>
+                </div>
+                <textarea id="outputPrompt" readonly rows="7"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script JavaScript -->
+    <script>
+        function generatePrompt() {
+            const mapel = document.getElementById('mapel').value.trim() || '[Mata Pelajaran]';
+            const jenjang = document.getElementById('jenjang').value.trim() || '[Jenjang Pendidikan]';
+            const topik = document.getElementById('topik').value.trim() || '[Topik/Materi Pembelajaran]';
+            const tipeSoal = document.getElementById('tipeSoal').value;
+            const jumlahSoal = document.getElementById('jumlahSoal').value;
+            const levelKognitif = document.getElementById('levelKognitif').value;
+            const kurikulum = document.getElementById('kurikulum').value.trim() || 'Kurikulum Nasional';
+            
+            const isKunci = document.getElementById('kunciJawaban').checked;
+            const isPembahasan = document.getElementById('pembahasan').checked;
+
+            let tambahanFitur = [];
+            if (isKunci) tambahanFitur.push("kunci jawaban");
+            if (isPembahasan) tambahanFitur.push("pembahasan detail untuk setiap soal");
+            let teksTambahan = tambahanFitur.length > 0 ? `Sertakan ${tambahanFitur.join(" dan ")} di bagian akhir.` : "";
+
+            let promptText = `Bertindaklah sebagai seorang ahli penyusun kurikulum, evaluator pendidikan, dan guru profesional yang berpengalaman. 
+
+Tolong buatkan ${jumlahSoal} soal berbentuk ${tipeSoal} untuk mata pelajaran ${mapel} kelas ${jenjang} dengan acuan ${kurikulum}.
+Topik/materi spesifik yang harus diuji adalah: ${topik}.
+
+Komposisi tingkat kesulitan/level kognitif yang diinginkan: ${levelKognitif}.
+
+${teksTambahan}
+Pastikan kualitas bahasa baku, komunikatif, tidak ambigu, dan buat opsi pengecoh (distraktor) yang logis serta mengecoh secara edukatif bagi siswa. Format output harus rapi dan siap disalin ke dokumen.`;
+
+            document.getElementById('outputPrompt').value = promptText;
+        }
+
+        async function copyToClipboard() {
+            const outputText = document.getElementById('outputPrompt');
+            if (!outputText.value) {
+                alert("Silakan klik 'Generate Prompt AI' terlebih dahulu!");
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(outputText.value);
+                const btnCopy = document.getElementById('btnCopy');
+                btnCopy.innerText = "✅ Tersalin!";
+                setTimeout(() => {
+                    btnCopy.innerText = "📋 Salin Prompt";
+                }, 2000);
+            } catch (err) {
+                outputText.select();
+                document.execCommand('copy');
+                alert("Prompt berhasil disalin!");
+            }
+        }
+
+        // Generate otomatis saat pertama kali dibuka agar langsung ada isinya
+        window.onload = function() {
+            generatePrompt();
+        };
+    </script>
+</body>
+</html>
